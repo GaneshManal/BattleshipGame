@@ -3,6 +3,7 @@
 # date: 07/07/2017
 # author: Ganesh Manal
 # description: A Sample battleship Game
+# Excercise Reviews - PENDING.
 """
 
 import os
