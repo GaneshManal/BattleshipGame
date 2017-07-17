@@ -69,6 +69,8 @@ class BattleArea(object):
         self.player_count = 0
         self._players = []
         self._dimensions = []
+        self.war_details = None
+        self.ship_row_count = 0
 
     def _configure_battle_field(self, dimensions):
         bf_dimension = dimensions.split(' ')
@@ -123,32 +125,21 @@ class BattleArea(object):
 
         return True, None
 
-    def configure_battle(self, war_details):
-        """
-        Configure the battle using the user input details
-        :param war_details: input details for battle management
-        :return: Successfully configured or not, error message
-        """
-
-        # Configure battlefield dimensions
-        ret, msg = self._configure_battle_field(war_details[constants.BF_DIMENSIONS])
-        if not ret:
-            return ret, msg
-
-        # Configure Player Count
-        self.player_count = int(war_details[constants.PLAYERS_COUNT])
+    def configure_players(self):
+        """ Configure players from the input details"""
         names = ['Player-1', 'Player-2', 'Player-3']
         for i in range(self.player_count):
             self._players.append(Player(names[i]))
+        return True, None
 
-        # Configure Ships
-        ship_row_count = 0
-        for data in war_details[constants.PLAYERS_COUNT + 1:]:
+    def configure_ships(self):
+        """ Configure Ships from the input details"""
+        for data in self.war_details[constants.PLAYERS_COUNT + 1:]:
             ship_details = data.split(' ')
             ship_type = ship_details[0]
 
             if ship_type in ['P', 'Q']:
-                ship_row_count += 1
+                self.ship_row_count += 1
 
                 ret, msg = self._configure_battle_ships(ship_type, ship_details)
                 if not ret:
@@ -156,9 +147,12 @@ class BattleArea(object):
             else:
                 break
 
+        return True, None
+
+    def configure_missiles(self):
         # Configure Missiles
         player_index = 0
-        for data in war_details[constants.PLAYERS_COUNT + ship_row_count + 1:]:
+        for data in self.war_details[constants.PLAYERS_COUNT + self.ship_row_count + 1:]:
             x_player = self._players[player_index]
             player_index += 1
 
@@ -173,6 +167,39 @@ class BattleArea(object):
 
         return True, None
 
+    def configure_battle(self, war_details):
+        """
+        Configure the battle using the user input details
+        :param war_details: input details for battle management
+        :return: Successfully configured or not, error message
+        """
+        self.war_details = war_details
+
+        # Configure battlefield dimensions
+        ret, msg = self._configure_battle_field(self.war_details[constants.BF_DIMENSIONS])
+        if not ret:
+            return ret, msg
+
+        # Configure Player Count
+        self.player_count = int(war_details[constants.PLAYERS_COUNT])
+
+        # Configure Players
+        ret, msg = self.configure_players()
+        if not ret:
+            return ret, msg
+
+        # Configure Ships
+        ret, msg = self.configure_ships()
+        if not ret:
+            return ret, msg
+
+        # Configure Missiles
+        ret, msg = self.configure_missiles()
+        if not ret:
+            return ret, msg
+
+        return True, 'Battle Configuration Successful.'
+
     def get_players(self):
         """ Read the battle field players"""
         return self._players
@@ -183,7 +210,7 @@ class BattleArea(object):
 
         while True:
             if len(attacker.get_missiles()) == 0 and len(defender.get_missiles()) == 0:
-                print("Piece Declared")
+                print("Peace Declared")
                 break
 
             missile = attacker.hit_missile()
@@ -211,6 +238,5 @@ class BattleArea(object):
                 if not len(defender.get_ships()):
                     print('%s won the battle' % attacker.get_name())
                     break
-
 
         return True
