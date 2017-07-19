@@ -1,0 +1,33 @@
+Questions 1 - Should classes be in separate files ?
+Answer - In python, a file is called as module.
+it does not make sense to have a rule that says, one file should only contain one class.
+the functionally related classes should go into a single file.
+But in case, there are too many related classes, then they should be put into differ modules/files & should
+be combined as a package.
+
+Question 2 - Why parsing done in the constructor ??
+Answer - Python provides a feature called - class method as an alternative constructor.
+Where, we can always pass on the data to a class method, and assign the parse data to member variable.
+which in turn can return the proper instance of a class.
+ideally, parsing should have done in class method.
+
+@classmethod
+def from_string(cls, emp_str):
+    # emp_str = 'Ganesh-Manal-gmanal1005@gmail.com'
+    first, last, email = emp_str.split('-')
+    return cls(first, last, pay)
+
+if battle details input file changes - only the parsing logic in class method will change.
+
+Question 3 - Why players, battlefield, weapons and ships not created outside and injected ?
+Answer - BattleArea - has a - battlefield and Players. Players - have - ships and missiles.
+BattleArea is going to be composite object of battlefield & players and player be the composite object of ships and missiles.
+if we do the data parsing outside battle area, then we will have to somehow keep the player association to assignment in accordance
+with the parsing logic. we will be one level up for abstraction and injection will need navigation.
+It will not be required in case the parsing is done at the BattleArea level.
+
+Question 4 - Player does not need to know about ship.
+Answer - Only information that ship possess is type (p/q) and its cells. The information is kept private and should not be access.
+only its member methods can access the private info. Player simply keeps the instances of these objects.
+And when actual war is started, it simply asks ship if missiles hits its cell if yes destroy the cell and when all cells are destroyed it asks
+the player to remove the ship from inventory.
