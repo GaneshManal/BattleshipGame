@@ -5,7 +5,7 @@ the functionally related classes should go into a single file.
 But in case, there are too many related classes, then they should be put into differ modules/files & should
 be combined as a package.
 
-Question 2 - Why parsing done in the constructor ??
+Question 2 - Why parsing done in the Battlearea ( configure battle ) ??
 Answer - Python provides a feature called - class method as an alternative constructor.
 Where, we can always pass on the data to a class method, and assign the parse data to member variable.
 which in turn can return the proper instance of a class.
